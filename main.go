@@ -72,6 +72,7 @@ Keybindings (in annotation panel):
   m       Toggle mark
   c       Mark + annotate
   S       Export marks to clipboard
+  P       Paste marks to left pane
   [/]     Shrink/expand content panel
   ?       Show help
   q       Quit`)

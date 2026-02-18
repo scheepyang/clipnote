@@ -19,6 +19,7 @@ type KeyMap struct {
 	Capture      key.Binding // r — capture visible area (append)
 	CaptureRange key.Binding // R — custom range capture (append)
 	ClearAll     key.Binding // ctrl+r — clear all content and marks
+	PasteToPane  key.Binding // P — paste marks to left pane
 }
 
 var keys = KeyMap{
@@ -38,4 +39,5 @@ var keys = KeyMap{
 	Capture:      key.NewBinding(key.WithKeys("r"), key.WithHelp("r", "capture visible")),
 	CaptureRange: key.NewBinding(key.WithKeys("R"), key.WithHelp("R", "custom range")),
 	ClearAll:     key.NewBinding(key.WithKeys("ctrl+r"), key.WithHelp("ctrl+r", "clear all")),
+	PasteToPane:  key.NewBinding(key.WithKeys("P"), key.WithHelp("P", "paste to left pane")),
 }
