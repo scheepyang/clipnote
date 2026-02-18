@@ -39,9 +39,9 @@ func launchSession(cli string) error {
 		return fmt.Errorf("failed to create tmux session: %w\n%s", err, out)
 	}
 
-	// right pane launches annotation TUI (35% width)
+	// right pane launches annotation TUI (45% width)
 	splitCmd := exec.Command("tmux",
-		"split-window", "-h", "-t", sessionName, "-l", "35%",
+		"split-window", "-h", "-t", sessionName, "-l", "45%",
 		self, "--internal-watch", sessionName+":0.0")
 	if out, err := splitCmd.CombinedOutput(); err != nil {
 		exec.Command("tmux", "kill-session", "-t", sessionName).Run()

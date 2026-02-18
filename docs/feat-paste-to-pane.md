@@ -1,5 +1,7 @@
 # feat/paste-to-pane 開發規格
 
+> **前置文件：** [ai-review 專案解說與 Go 語言入門指南](project-guide.md)
+
 <a id="目錄"></a>
 
 ## 目錄

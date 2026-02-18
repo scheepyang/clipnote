@@ -5,6 +5,8 @@ import (
 	"strings"
 )
 
+const noteExportPrefix = "[Q] "
+
 // Mark represents a user's annotation on a specific line
 type Mark struct {
 	Line int
@@ -56,15 +58,11 @@ func (m *Model) ExportMarks() string {
 		return ""
 	}
 	var sb strings.Builder
-	sb.WriteString("## ai-review mark summary\n\n")
 	for _, mk := range m.marks {
-		sb.WriteString(fmt.Sprintf("### L%d: %s\n", mk.Line+1, mk.Text))
+		sb.WriteString(mk.Text + "\n")
 		if mk.Note != "" {
-			sb.WriteString(fmt.Sprintf("> %s\n", mk.Note))
-		} else {
-			sb.WriteString("(no note)\n")
+			sb.WriteString(fmt.Sprintf("> %s%s\n", noteExportPrefix, mk.Note))
 		}
-		sb.WriteString("\n")
 	}
 	return strings.TrimSpace(sb.String())
 }

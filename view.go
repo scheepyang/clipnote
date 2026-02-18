@@ -156,11 +156,17 @@ func (m Model) renderMarks(width, height int) string {
 }
 
 func (m Model) renderStatusBar() string {
-	left := statusStyle.Render("  [r]capture [m]mark [c]note [S]export [P]paste [?]help [q]quit")
-
+	leftText := "  [?]help [q]quit [r]capture [m]mark [c]note [S]export [P]paste"
 	right := statusStyle.Render(fmt.Sprintf("L%d/%d  Marks: %d  ", m.cursorLine+1, len(m.lines), len(m.marks)))
 
-	gap := m.width - lipgloss.Width(left) - lipgloss.Width(right)
+	rightW := lipgloss.Width(right)
+	maxLeft := m.width - rightW
+	if maxLeft < 0 {
+		maxLeft = 0
+	}
+	left := statusStyle.Render(truncateLine(leftText, maxLeft))
+
+	gap := m.width - lipgloss.Width(left) - rightW
 	if gap < 0 {
 		gap = 0
 	}
