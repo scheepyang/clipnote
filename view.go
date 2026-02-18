@@ -156,7 +156,7 @@ func (m Model) renderMarks(width, height int) string {
 }
 
 func (m Model) renderStatusBar() string {
-	left := statusStyle.Render("  [r]capture [m]mark [c]mark+note [S]export [?]help [q]quit")
+	left := statusStyle.Render("  [r]capture [m]mark [c]note [S]export [P]paste [?]help [q]quit")
 
 	right := statusStyle.Render(fmt.Sprintf("L%d/%d  Marks: %d  ", m.cursorLine+1, len(m.lines), len(m.marks)))
 
@@ -184,6 +184,7 @@ func (m Model) renderHelp() string {
   Ctrl+S      Submit note (input mode)
   Esc         Cancel input (input mode)
   S           Export all marks to clipboard
+  P           Paste marks to left pane
   [ / ]       Shrink/expand content panel
   q           Quit
   ?           Toggle this help

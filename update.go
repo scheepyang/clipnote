@@ -219,6 +219,9 @@ func (m Model) handleBrowseMode(msg tea.KeyMsg) (tea.Model, tea.Cmd) {
 	case key.Matches(msg, keys.Submit):
 		m.statusMsg = m.CopyMarksToClipboard()
 
+	case key.Matches(msg, keys.PasteToPane):
+		m.statusMsg = m.PasteMarksToPane()
+
 	case key.Matches(msg, keys.Help):
 		m.showHelp = true
 
