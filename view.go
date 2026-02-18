@@ -25,6 +25,10 @@ var (
 			Foreground(lipgloss.Color("212")).
 			Render("●")
 
+	noteMarkSymbol = lipgloss.NewStyle().
+				Foreground(lipgloss.Color("220")).
+				Render("●")
+
 	statusStyle = lipgloss.NewStyle().
 			Foreground(lipgloss.Color("241"))
 
@@ -36,10 +40,6 @@ var (
 func (m Model) View() string {
 	if !m.ready {
 		return "Loading..."
-	}
-
-	if m.showHelp {
-		return m.renderHelp()
 	}
 
 	leftWidth := m.width*m.splitRatio/100 - 2
@@ -75,7 +75,7 @@ func (m Model) View() string {
 	// bottom status bar
 	var statusBar string
 	if m.inputMode {
-		hint := statusStyle.Render(fmt.Sprintf("  Note L%d  (Enter newline | Ctrl+S submit | Esc cancel)", m.cursorLine+1))
+		hint := statusStyle.Render(fmt.Sprintf("  Note L%d  (Ctrl+S submit | Esc cancel)", m.cursorLine+1))
 		statusBar = hint + "\n" + m.noteInput.View()
 	} else if m.captureInput {
 		input := m.captureInputBuf
@@ -89,7 +89,13 @@ func (m Model) View() string {
 		statusBar = m.renderStatusBar()
 	}
 
-	return lipgloss.JoinVertical(lipgloss.Left, panels, statusBar)
+	result := lipgloss.JoinVertical(lipgloss.Left, panels, statusBar)
+
+	if m.overlayType != overlayNone {
+		content := m.overlayContent()
+		result = renderOverlay(result, content, m.width, m.height)
+	}
+	return result
 }
 
 func (m Model) renderContent(width, height int) string {
@@ -117,8 +123,12 @@ func (m Model) renderContent(width, height int) string {
 	for i := start; i < end; i++ {
 		lineNum := fmt.Sprintf("%4d", i+1)
 		mark := "  "
-		if m.HasMark(i) {
-			mark = markSymbol + " "
+		if mk := m.GetMark(i); mk != nil {
+			if mk.Note != "" {
+				mark = noteMarkSymbol + " "
+			} else {
+				mark = markSymbol + " "
+			}
 		}
 
 		lineText := truncateLine(m.lines[i], width-8)
@@ -156,7 +166,7 @@ func (m Model) renderMarks(width, height int) string {
 }
 
 func (m Model) renderStatusBar() string {
-	leftText := "  [?]help [q]quit [r]capture [m]mark [c]note [S]export [P]paste"
+	leftText := "  ? help | q quit | m mark | S export"
 	right := statusStyle.Render(fmt.Sprintf("L%d/%d  Marks: %d  ", m.cursorLine+1, len(m.lines), len(m.marks)))
 
 	rightW := lipgloss.Width(right)
@@ -173,31 +183,136 @@ func (m Model) renderStatusBar() string {
 	return left + strings.Repeat(" ", gap) + right
 }
 
-func (m Model) renderHelp() string {
-	help := `
-  ai-review keybindings
+func (m Model) overlayContent() string {
+	switch m.overlayType {
+	case overlayHelp:
+		return `ai-review shortcuts
 
-  r           Capture visible area (append)
-  R           Custom range capture (append)
-  Ctrl+r      Clear all content and marks
-  j / ↓       Move down
-  k / ↑       Move up
-  g           Jump to top
-  G           Jump to bottom
-  m           Toggle mark on current line
-  c           Mark current line + open note input
-  Enter       Newline (input mode)
-  Ctrl+S      Submit note (input mode)
-  Esc         Cancel input (input mode)
-  S           Export all marks to clipboard
-  P           Paste marks to left pane
-  [ / ]       Shrink/expand content panel
-  q           Quit
-  ?           Toggle this help
+r         capture visible area
+R         custom range capture
+Ctrl+r    clear all content
+j/k ↑/↓   move cursor
+g / G     top / bottom
+m         toggle mark
+c         mark + note
+v         view note
+S         export to clipboard
+P         paste to left pane
+[ / ]     resize panels
+q         quit
+?         this help
 
-  Press any key to close...
-`
-	return helpStyle.Render(help)
+press any key to close...`
+
+	case overlayNote:
+		for _, mk := range m.marks {
+			if mk.Line == m.cursorLine && mk.Note != "" {
+				return fmt.Sprintf("Note on L%d\n\n%s\n\npress any key to close...", mk.Line+1, mk.Note)
+			}
+		}
+	}
+	return ""
+}
+
+func renderOverlay(base, content string, width, height int) string {
+	baseLines := strings.Split(base, "\n")
+	for len(baseLines) < height {
+		baseLines = append(baseLines, strings.Repeat(" ", width))
+	}
+
+	contentLines := strings.Split(content, "\n")
+
+	// 計算浮窗尺寸（含邊框 padding 各 1）
+	maxContentW := 0
+	for _, cl := range contentLines {
+		w := runewidth.StringWidth(cl)
+		if w > maxContentW {
+			maxContentW = w
+		}
+	}
+	boxInnerW := maxContentW + 2 // 左右各 1 格 padding
+	if boxInnerW > width-4 {
+		boxInnerW = width - 4
+	}
+	boxH := len(contentLines) + 2 // 上下各 1 格 padding
+	if boxH > height-2 {
+		boxH = height - 2
+	}
+
+	overlay := lipgloss.NewStyle().
+		Width(boxInnerW).
+		Height(boxH).
+		Padding(1).
+		Border(lipgloss.RoundedBorder()).
+		BorderForeground(lipgloss.Color("62")).
+		Background(lipgloss.Color("235")).
+		Render(content)
+
+	overlayLines := strings.Split(overlay, "\n")
+	overlayW := 0
+	for _, ol := range overlayLines {
+		w := runewidth.StringWidth(ol)
+		if w > overlayW {
+			overlayW = w
+		}
+	}
+
+	// 置中位置
+	startRow := (height - len(overlayLines)) / 2
+	startCol := (width - overlayW) / 2
+	if startRow < 0 {
+		startRow = 0
+	}
+	if startCol < 0 {
+		startCol = 0
+	}
+
+	for i, ol := range overlayLines {
+		row := startRow + i
+		if row >= len(baseLines) {
+			break
+		}
+		baseLine := baseLines[row]
+		baseRunes := []rune(baseLine)
+
+		// 將 overlay 行補齊到統一寬度，避免右側底層文字露出
+		olW := runewidth.StringWidth(ol)
+		if olW < overlayW {
+			ol += strings.Repeat(" ", overlayW-olW)
+		}
+
+		// 在 startCol 位置嵌入 overlay 行
+		prefix := padToWidth(baseRunes, startCol)
+		suffix := sliceFromWidth(baseRunes, startCol+overlayW)
+		baseLines[row] = prefix + ol + suffix
+	}
+
+	return strings.Join(baseLines, "\n")
+}
+
+// padToWidth 取 runes 前 targetW 寬度的部分，不足則補空格
+func padToWidth(runes []rune, targetW int) string {
+	w := 0
+	for i, r := range runes {
+		rw := runewidth.RuneWidth(r)
+		if w+rw > targetW {
+			return string(runes[:i]) + strings.Repeat(" ", targetW-w)
+		}
+		w += rw
+	}
+	return string(runes) + strings.Repeat(" ", targetW-w)
+}
+
+// sliceFromWidth 從 runes 的第 startW 寬度位置開始取剩餘部分
+func sliceFromWidth(runes []rune, startW int) string {
+	w := 0
+	for i, r := range runes {
+		if w >= startW {
+			return string(runes[i:])
+		}
+		w += runewidth.RuneWidth(r)
+	}
+	return ""
 }
 
 func truncateLine(s string, maxWidth int) string {

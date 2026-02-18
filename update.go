@@ -25,8 +25,8 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		return m.handleCaptureAppend(string(msg)), nil
 
 	case tea.KeyMsg:
-		if m.showHelp {
-			m.showHelp = false
+		if m.overlayType != overlayNone {
+			m.overlayType = overlayNone
 			return m, nil
 		}
 
@@ -222,8 +222,16 @@ func (m Model) handleBrowseMode(msg tea.KeyMsg) (tea.Model, tea.Cmd) {
 	case key.Matches(msg, keys.PasteToPane):
 		m.statusMsg = m.PasteMarksToPane()
 
+	case key.Matches(msg, keys.ViewNote):
+		for _, mk := range m.marks {
+			if mk.Line == m.cursorLine && mk.Note != "" {
+				m.overlayType = overlayNote
+				return m, nil
+			}
+		}
+
 	case key.Matches(msg, keys.Help):
-		m.showHelp = true
+		m.overlayType = overlayHelp
 
 	case key.Matches(msg, keys.ShrinkLeft):
 		if m.splitRatio > 30 {

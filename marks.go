@@ -44,6 +44,15 @@ func (m *Model) RemoveMark(line int) {
 	}
 }
 
+func (m Model) GetMark(line int) *Mark {
+	for i := range m.marks {
+		if m.marks[i].Line == line {
+			return &m.marks[i]
+		}
+	}
+	return nil
+}
+
 func (m *Model) HasMark(line int) bool {
 	for _, mk := range m.marks {
 		if mk.Line == line {

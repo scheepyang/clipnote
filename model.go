@@ -17,13 +17,21 @@ const noteInputHeight = 4
 // CaptureAppendMsg is the message type for capture results
 type CaptureAppendMsg string
 
+type overlayKind int
+
+const (
+	overlayNone overlayKind = iota
+	overlayHelp
+	overlayNote
+)
+
 type Model struct {
 	lines     []string
 	noteInput textarea.Model
 	marks      []Mark
 	cursorLine int
 	inputMode  bool
-	showHelp   bool
+	overlayType overlayKind
 	width      int
 	height     int
 	statusMsg  string
@@ -40,7 +48,7 @@ type Model struct {
 
 func NewWatchModel(paneID string) Model {
 	ta := textarea.New()
-	ta.Placeholder = "Enter note (Enter newline, Ctrl+S submit, Esc cancel)"
+	ta.Placeholder = "Enter note..."
 	ta.CharLimit = 500
 	ta.SetHeight(noteInputHeight)
 	ta.ShowLineNumbers = false
