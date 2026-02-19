@@ -1,0 +1,7 @@
+{
+  "name": "clipnote",
+  "version": "0.1.0",
+  "description": "AI CLI output annotation tool - mark, annotate, and export AI responses in a tmux split pane",
+  "author": { "name": "nevertomica" },
+  "keywords": ["review", "annotation", "tmux", "tui"]
+}

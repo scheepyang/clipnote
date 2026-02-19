@@ -1,6 +1,6 @@
 # feat/paste-to-pane 開發規格
 
-> **前置文件：** [ai-review 專案解說與 Go 語言入門指南](project-guide.md)
+> **前置文件：** [clipnote 專案解說與 Go 語言入門指南](project-guide.md)
 
 <a id="目錄"></a>
 
@@ -23,7 +23,7 @@
 
 ## 功能概述
 
-在 ai-review TUI 的 Browse 模式下，按 `P` 鍵將已標記（marked）的內容以 Markdown 格式貼入左側 tmux pane。
+在 clipnote TUI 的 Browse 模式下，按 `P` 鍵將已標記（marked）的內容以 Markdown 格式貼入左側 tmux pane。
 
 [回到目錄](#目錄)
 

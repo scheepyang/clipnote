@@ -1,0 +1,12 @@
+{
+  "name": "nevertomica",
+  "owner": { "name": "nevertomica" },
+  "plugins": [
+    {
+      "name": "clipnote",
+      "version": "0.1.0",
+      "source": "./plugin",
+      "description": "AI CLI output annotation tool - mark, annotate, and export AI responses in a tmux split pane"
+    }
+  ]
+}

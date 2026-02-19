@@ -1,4 +1,4 @@
-# ai-review 浮動視窗功能規劃
+# clipnote 浮動視窗功能規劃
 
 <a id="目錄"></a>
 
@@ -21,7 +21,7 @@
 
 ## 背景與目標
 
-ai-review 的底部狀態列塞了 7 個快捷鍵提示（共 67 字元），在窄視窗下被 `truncateLine()` 截斷，導致快捷鍵文字和右側行號資訊黏在一起，難以閱讀。
+clipnote 的底部狀態列塞了 7 個快捷鍵提示（共 67 字元），在窄視窗下被 `truncateLine()` 截斷，導致快捷鍵文字和右側行號資訊黏在一起，難以閱讀。
 
 此外，右側面板的註記內容受限於面板寬度而被截斷，無法查看完整文字。
 
@@ -74,7 +74,7 @@ ai-review 的底部狀態列塞了 7 個快捷鍵提示（共 67 字元），在
 
 ```
 ┌──────────────────────┐
-│  ai-review shortcuts │
+│  clipnote shortcuts │
 │                      │
 │  r  capture          │
 │  m  mark             │
@@ -181,7 +181,7 @@ func (m Model) View() string {
 
 ## 驗證步驟
 
-1. `cd ~/Desktop/ai/ai-review && go build -o ai-review .`
+1. `cd ~/Desktop/ai/clipnote && go build -o clipnote .`
 2. 按 `?` 確認浮窗顯示快捷鍵（非全屏），按任意鍵關閉
 3. 標記一行並加上長註記，游標移到該行按 `v` 確認浮窗顯示完整註記
 4. 確認狀態列精簡後在窄視窗下不截斷

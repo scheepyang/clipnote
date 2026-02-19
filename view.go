@@ -186,7 +186,7 @@ func (m Model) renderStatusBar() string {
 func (m Model) overlayContent() string {
 	switch m.overlayType {
 	case overlayHelp:
-		return `ai-review shortcuts
+		return `clipnote shortcuts
 
 r         capture visible area
 R         custom range capture

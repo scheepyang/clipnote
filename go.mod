@@ -1,4 +1,4 @@
-module github.com/scheep-yang/ai-review
+module github.com/nevertomica/clipnote
 
 go 1.24.4
 

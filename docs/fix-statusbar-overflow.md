@@ -71,8 +71,8 @@ func (m Model) renderStatusBar() string {
 
 ## 驗證步驟
 
-1. `cd ~/Desktop/ai/ai-review && go build -o ai-review .` 確認編譯通過
-2. `./ai-review` 啟動後，縮小終端機寬度，確認 status bar 不再溢出且 `…` 截斷正確顯示
+1. `cd ~/Desktop/ai/clipnote && go build -o clipnote .` 確認編譯通過
+2. `./clipnote` 啟動後，縮小終端機寬度，確認 status bar 不再溢出且 `…` 截斷正確顯示
 3. 按 `?` 確認 help overlay 仍正常顯示完整按鍵說明
 
 [⬆ 回到目錄](#目錄)

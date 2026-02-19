@@ -60,11 +60,11 @@ func runLauncher() {
 }
 
 func printUsage() {
-	fmt.Println(`ai-review — AI CLI output annotation tool (tmux session mode)
+	fmt.Println(`clipnote — AI CLI output annotation tool (tmux session mode)
 
 Usage:
-  ai-review              Launch tmux session (auto-detect AI CLI)
-  ai-review --help       Show this help
+  clipnote              Launch tmux session (auto-detect AI CLI)
+  clipnote --help       Show this help
 
 Keybindings (in annotation panel):
   r       Capture left pane content

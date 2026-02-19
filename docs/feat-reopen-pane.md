@@ -1,4 +1,4 @@
-# 為 ai-review tmux session 綁定 prefix+a 重新開啟 annotation pane
+# 為 clipnote tmux session 綁定 prefix+a 重新開啟 annotation pane
 
 <a id="目錄"></a>
 
@@ -68,7 +68,7 @@ exec.Command("tmux", "bind-key", "a",
 ## 驗證步驟
 
 ```bash
-cd ~/Desktop/ai/ai-review && go build -o ai-review . && ./ai-review
+cd ~/Desktop/ai/clipnote && go build -o clipnote . && ./clipnote
 ```
 
 1. 右側 pane 按 `q` 退出 → pane 關閉

@@ -1,4 +1,4 @@
-# ai-review 專案解說與 Go 語言入門指南
+# clipnote 專案解說與 Go 語言入門指南
 
 <a id="目錄"></a>
 
@@ -27,7 +27,7 @@
 
 ## 專案概覽
 
-ai-review 是一個 **AI CLI 輸出標註工具**。當你使用 Claude CLI、Gemini 等 AI 工具時，AI 會吐出大量文字，這個工具讓你能「標記」重要的行、加上筆記、最後匯出。
+clipnote 是一個 **AI CLI 輸出標註工具**。當你使用 Claude CLI、Gemini 等 AI 工具時，AI 會吐出大量文字，這個工具讓你能「標記」重要的行、加上筆記、最後匯出。
 
 運作方式：
 
@@ -41,7 +41,7 @@ ai-review 是一個 **AI CLI 輸出標註工具**。當你使用 Claude CLI、Ge
 │                             │  Marks (1)        │
 │                             │  L2 這行被標記了     │
 └─────────────────────────────┴──────────────────┘
-           tmux session: "ai-review"
+           tmux session: "clipnote"
 ```
 
 使用 **tmux**（終端機多工器）將畫面分成左右兩半，左邊跑 AI CLI，右邊跑標註面板 TUI。
@@ -89,7 +89,7 @@ import (
 Go 的套件管理用 `go.mod` 檔案（類似 Node.js 的 `package.json`）：
 
 ```go
-module github.com/scheep-yang/ai-review  // 這個專案的模組名稱
+module github.com/nevertomica/clipnote  // 這個專案的模組名稱
 go 1.24.4                                 // Go 版本
 
 require (
@@ -418,7 +418,7 @@ const noteInputHeight = 4       // 常數宣告
 func example() {
     clis := detectCLIs()         // := 短變數宣告（型別自動推斷，只能在函式內用）
     var found []string           // var 宣告（nil 切片）
-    sessionName := "ai-review"   // := 最常用的寫法
+    sessionName := "clipnote"   // := 最常用的寫法
 }
 ```
 
@@ -482,9 +482,9 @@ var cursorStyle = lipgloss.NewStyle().
    └─ 無參數（預設）  → runLauncher()
        ├─ detectCLIs()  偵測已安裝的 AI CLI（claude, gemini, codex, aider）
        └─ launchSession(cli)
-           ├─ 建立 tmux session "ai-review"
+           ├─ 建立 tmux session "clipnote"
            ├─ 左窗格執行 AI CLI
-           ├─ 右窗格執行 ai-review --internal-watch（自己）
+           ├─ 右窗格執行 clipnote --internal-watch（自己）
            └─ attach 到 session（使用者開始互動）
 
 2. 標註面板 TUI 循環（The Elm Architecture）

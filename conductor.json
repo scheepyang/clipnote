@@ -1,0 +1,5 @@
+{
+  "scripts": {
+    "setup": "bash plugin/scripts/setup.sh"
+  }
+}

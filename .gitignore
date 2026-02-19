@@ -1,2 +1,4 @@
-ai-review
+clipnote
 .DS_Store
+.claude/
+plugin/bin/

@@ -85,7 +85,7 @@ func (m Model) GetMark(line int) *Mark {
 
 ## 驗證步驟
 
-1. `cd ~/Desktop/ai/ai-review && go build -o ai-review . && ./ai-review`
+1. `cd ~/Desktop/ai/clipnote && go build -o clipnote . && ./clipnote`
 2. 按 `m` 標記一行 → 粉紅色 ●
 3. 按 `c` 標記另一行並輸入筆記 → 黃色 ●
 4. 對已有純標記的行按 `c` 加筆記 → 符號變為黃色

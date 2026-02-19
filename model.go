@@ -39,7 +39,7 @@ type Model struct {
 	splitRatio   int // left content panel width percentage (default 70)
 	scrollOffset int // manually managed scroll offset
 
-	tmuxPane       string // left pane tmux ID (e.g. ai-review:0.0)
+	tmuxPane       string // left pane tmux ID (e.g. clipnote:0.0)
 	captureCount   int    // capture counter for separator lines (#N)
 	captureInput   bool   // whether R line count input mode is active
 	captureInputBuf string // R input buffer text

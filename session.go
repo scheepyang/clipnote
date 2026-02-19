@@ -23,7 +23,7 @@ func detectCLIs() []string {
 }
 
 func launchSession(cli string) error {
-	sessionName := "ai-review"
+	sessionName := "clipnote"
 	self, err := os.Executable()
 	if err != nil {
 		return fmt.Errorf("failed to get executable path: %w", err)
