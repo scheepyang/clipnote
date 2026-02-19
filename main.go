@@ -43,11 +43,14 @@ func runLauncher() {
 		os.Exit(1)
 	}
 
-	// Single CLI -> launch directly
-	// Multiple CLIs -> use the first one (TODO: add selection menu)
-	cli := clis[0]
-	if len(clis) > 1 {
-		fmt.Printf("Multiple CLIs detected: %v, using %s\n", clis, cli)
+	var cli string
+	if len(clis) == 1 {
+		cli = clis[0]
+	} else {
+		cli = runSelector(clis)
+		if cli == "" {
+			return
+		}
 	}
 
 	if err := launchSession(cli); err != nil {
