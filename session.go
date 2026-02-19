@@ -53,6 +53,13 @@ func launchSession(cli string) error {
 	exec.Command("tmux", "set-option", "-t", sessionName, "pane-border-style", "fg=colour62").Run()
 	exec.Command("tmux", "set-option", "-t", sessionName, "pane-active-border-style", "fg=colour62").Run()
 
+	// bind prefix+a to reopen annotation pane if closed
+	// wrap in sh -c to prevent tmux from misinterpreting --internal-watch during re-parse
+	reopenCmd := fmt.Sprintf("%s --internal-watch %s:0.0", self, sessionName)
+	exec.Command("tmux", "bind-key", "a",
+		"split-window", "-h", "-t", sessionName+":0.0", "-l", "45%",
+		"sh", "-c", reopenCmd).Run()
+
 	// attach to session (blocks until user detaches)
 	attachCmd := exec.Command("tmux", "attach-session", "-t", sessionName)
 	attachCmd.Stdin = os.Stdin

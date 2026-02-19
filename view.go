@@ -222,7 +222,7 @@ func renderOverlay(base, content string, width, height int) string {
 
 	contentLines := strings.Split(content, "\n")
 
-	// 計算浮窗尺寸（含邊框 padding 各 1）
+	// calculate overlay dimensions (including 1-cell border padding)
 	maxContentW := 0
 	for _, cl := range contentLines {
 		w := runewidth.StringWidth(cl)
@@ -230,11 +230,11 @@ func renderOverlay(base, content string, width, height int) string {
 			maxContentW = w
 		}
 	}
-	boxInnerW := maxContentW + 2 // 左右各 1 格 padding
+	boxInnerW := maxContentW + 2 // 1-cell padding on each side
 	if boxInnerW > width-4 {
 		boxInnerW = width - 4
 	}
-	boxH := len(contentLines) + 2 // 上下各 1 格 padding
+	boxH := len(contentLines) + 2 // 1-cell padding on top and bottom
 	if boxH > height-2 {
 		boxH = height - 2
 	}
@@ -257,7 +257,7 @@ func renderOverlay(base, content string, width, height int) string {
 		}
 	}
 
-	// 置中位置
+	// center the overlay
 	startRow := (height - len(overlayLines)) / 2
 	startCol := (width - overlayW) / 2
 	if startRow < 0 {
@@ -275,13 +275,13 @@ func renderOverlay(base, content string, width, height int) string {
 		baseLine := baseLines[row]
 		baseRunes := []rune(baseLine)
 
-		// 將 overlay 行補齊到統一寬度，避免右側底層文字露出
+		// pad overlay line to uniform width to prevent base text bleeding through
 		olW := runewidth.StringWidth(ol)
 		if olW < overlayW {
 			ol += strings.Repeat(" ", overlayW-olW)
 		}
 
-		// 在 startCol 位置嵌入 overlay 行
+		// splice overlay line into base at startCol
 		prefix := padToWidth(baseRunes, startCol)
 		suffix := sliceFromWidth(baseRunes, startCol+overlayW)
 		baseLines[row] = prefix + ol + suffix
@@ -290,7 +290,7 @@ func renderOverlay(base, content string, width, height int) string {
 	return strings.Join(baseLines, "\n")
 }
 
-// padToWidth 取 runes 前 targetW 寬度的部分，不足則補空格
+// padToWidth returns the first targetW display-width of runes, space-padded if shorter
 func padToWidth(runes []rune, targetW int) string {
 	w := 0
 	for i, r := range runes {
@@ -303,7 +303,7 @@ func padToWidth(runes []rune, targetW int) string {
 	return string(runes) + strings.Repeat(" ", targetW-w)
 }
 
-// sliceFromWidth 從 runes 的第 startW 寬度位置開始取剩餘部分
+// sliceFromWidth returns the substring starting at display-width offset startW
 func sliceFromWidth(runes []rune, startW int) string {
 	w := 0
 	for i, r := range runes {
