@@ -180,26 +180,29 @@ func launchNewTmuxAndAttach(cli, sessionID, self string) error {
 
 	configureTmuxSession(sessionName, self)
 
-	// open a terminal window via osascript to attach to the tmux session
-	osascriptCmd := exec.Command("osascript", "-e", terminalAttachScript(sessionName))
-	return osascriptCmd.Run()
+	// write a .command script and open it in the user's terminal
+	scriptPath := "/tmp/clipnote-attach.command"
+	script := fmt.Sprintf("#!/bin/sh\ntmux attach-session -t %s\n", sessionName)
+	if err := os.WriteFile(scriptPath, []byte(script), 0755); err != nil {
+		return fmt.Errorf("failed to write attach script: %w", err)
+	}
+
+	app := terminalAppName()
+	if app != "" {
+		return exec.Command("open", "-a", app, scriptPath).Run()
+	}
+	return exec.Command("open", scriptPath).Run()
 }
 
-// terminalAttachScript returns an AppleScript that opens the user's terminal
-// and attaches to the given tmux session. Detects the terminal via TERM_PROGRAM.
-func terminalAttachScript(sessionName string) string {
-	attachCmd := fmt.Sprintf("tmux attach-session -t %s", sessionName)
+// terminalAppName maps TERM_PROGRAM to the application name for `open -a`.
+func terminalAppName() string {
 	switch os.Getenv("TERM_PROGRAM") {
 	case "iTerm.app":
-		return fmt.Sprintf(`tell application "iTerm"
-activate
-create window with default profile command "%s"
-end tell`, attachCmd)
+		return "iTerm"
+	case "Apple_Terminal":
+		return "Terminal"
 	default:
-		return fmt.Sprintf(`tell application "Terminal"
-activate
-do script "%s"
-end tell`, attachCmd)
+		return ""
 	}
 }
 
