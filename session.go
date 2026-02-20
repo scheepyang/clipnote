@@ -149,7 +149,7 @@ func launchInCurrentTerminal(cli, sessionID string) error {
 	return attachCmd.Run()
 }
 
-// launchNewTmuxAndAttach creates a detached tmux session and opens Terminal.app to attach.
+// launchNewTmuxAndAttach creates a detached tmux session and opens the user's terminal to attach.
 // Used when not inside tmux and no TTY (plugin subprocess).
 func launchNewTmuxAndAttach(cli, sessionID, self string) error {
 	sessionName := "clipnote"
@@ -180,14 +180,27 @@ func launchNewTmuxAndAttach(cli, sessionID, self string) error {
 
 	configureTmuxSession(sessionName, self)
 
-	// open a new Terminal.app window via osascript to attach to the tmux session
-	attachScript := fmt.Sprintf("tmux attach-session -t %s", sessionName)
-	osascriptCmd := exec.Command("osascript", "-e",
-		fmt.Sprintf(`tell application "Terminal"
+	// open a terminal window via osascript to attach to the tmux session
+	osascriptCmd := exec.Command("osascript", "-e", terminalAttachScript(sessionName))
+	return osascriptCmd.Run()
+}
+
+// terminalAttachScript returns an AppleScript that opens the user's terminal
+// and attaches to the given tmux session. Detects the terminal via TERM_PROGRAM.
+func terminalAttachScript(sessionName string) string {
+	attachCmd := fmt.Sprintf("tmux attach-session -t %s", sessionName)
+	switch os.Getenv("TERM_PROGRAM") {
+	case "iTerm.app":
+		return fmt.Sprintf(`tell application "iTerm"
+activate
+create window with default profile command "%s"
+end tell`, attachCmd)
+	default:
+		return fmt.Sprintf(`tell application "Terminal"
 activate
 do script "%s"
-end tell`, attachScript))
-	return osascriptCmd.Run()
+end tell`, attachCmd)
+	}
 }
 
 // configureTmuxSession sets mouse, border color, and bind-key for the session.
