@@ -15,6 +15,17 @@ func main() {
 		return
 	}
 
+	// IPC client: clipnote ipc <command> [args...]
+	if len(os.Args) >= 3 && os.Args[1] == "ipc" {
+		command := os.Args[2]
+		args := os.Args[3:]
+		if err := sendIPCCommand(command, args); err != nil {
+			fmt.Fprintf(os.Stderr, "IPC error: %v\n", err)
+			os.Exit(1)
+		}
+		return
+	}
+
 	// Role 2: annotation panel TUI (invoked internally by tmux split-pane)
 	if len(os.Args) >= 3 && os.Args[1] == "--internal-watch" {
 		paneID := os.Args[2]
@@ -31,6 +42,10 @@ func runAnnotationTUI(paneID string) {
 
 	opts := []tea.ProgramOption{tea.WithAltScreen()}
 	p := tea.NewProgram(m, opts...)
+
+	// expose program to IPC handler so it can inject messages
+	ipcProgram = p
+
 	if _, err := p.Run(); err != nil {
 		fmt.Fprintf(os.Stderr, "TUI error: %v\n", err)
 		os.Exit(1)
@@ -72,11 +87,18 @@ func runLauncher() {
 }
 
 func printUsage() {
-	fmt.Println(`clipnote — AI CLI output annotation tool (tmux session mode)
+	fmt.Println(`clipnote -- AI CLI output annotation tool (tmux session mode)
 
 Usage:
   clipnote              Launch tmux session (auto-detect AI CLI)
+  clipnote ipc <cmd>    Send IPC command to running annotation TUI
   clipnote --help       Show this help
+
+IPC commands:
+  capture               Capture left pane content
+  get-marks             Get all marks as JSON
+  mark <line> [line...] Mark specific lines (0-indexed)
+  export                Export marks to clipboard
 
 Keybindings (in annotation panel):
   r       Capture left pane content

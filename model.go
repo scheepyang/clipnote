@@ -63,7 +63,7 @@ func NewWatchModel(paneID string) Model {
 }
 
 func (m Model) Init() tea.Cmd {
-	return nil
+	return startIPCServer()
 }
 
 // captureVisible captures the visible area of the left pane (scroll-position aware)

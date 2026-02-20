@@ -13,8 +13,9 @@ Launch the clipnote annotation session via tmux.
 ## Instructions
 
 1. When you detect the user's intent matches this skill, first explain:
-   - clipnote will open a **new tmux session** with an AI CLI and an annotation panel side by side
-   - This will **leave the current Claude Code environment** — the user will switch to a separate tmux workspace
+   - If running inside tmux: clipnote will open as a **split pane** in the current window (no context switch)
+   - If not inside tmux: clipnote will open in a **new Terminal.app window**
+   - Multiple launches will reuse the existing pane instead of creating new ones
 2. Ask the user to confirm before proceeding (e.g. "Shall I launch clipnote now?")
 3. Only after the user confirms, run the following command using the Bash tool:
 
@@ -22,7 +23,8 @@ Launch the clipnote annotation session via tmux.
 CLIPNOTE_CLI=claude "${CLAUDE_PLUGIN_ROOT}/bin/clipnote"
 ```
 
-This will create a tmux session with Claude CLI on the left and the annotation panel on the right.
+When inside tmux, this splits the current window with the annotation panel on the right (45% width).
+When outside tmux, this opens a new Terminal.app window with a full tmux session.
 
 Note: `CLIPNOTE_CLI=claude` bypasses the interactive CLI selector, which cannot run inside Claude Code's non-TTY environment.
 

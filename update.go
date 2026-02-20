@@ -21,6 +21,11 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		}
 		return m, nil
 
+	case IPCMsg:
+		resp := m.handleIPC(msg.Request)
+		msg.ReplyCh <- resp
+		return m, nil
+
 	case CaptureAppendMsg:
 		return m.handleCaptureAppend(string(msg)), nil
 
