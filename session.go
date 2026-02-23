@@ -89,11 +89,9 @@ func launchInTmuxSplit(self string) error {
 
 	savePaneID(strings.TrimSpace(string(out)))
 
-	// bind prefix+a to reopen annotation pane if closed
+	// bind prefix+a to toggle annotation pane
 	reopenCmd := fmt.Sprintf("%s --internal-watch %s", self, callerPane)
-	exec.Command("tmux", "bind-key", "a",
-		"split-window", "-h", "-t", callerPane, "-l", "45%",
-		"sh", "-c", reopenCmd).Run()
+	bindAnnotationKey(callerPane, reopenCmd)
 
 	return nil
 }
@@ -230,11 +228,26 @@ func configureTmuxSession(sessionName, self string) {
 	exec.Command("tmux", "set-option", "-t", sessionName, "pane-border-style", "fg=colour62").Run()
 	exec.Command("tmux", "set-option", "-t", sessionName, "pane-active-border-style", "fg=colour62").Run()
 
-	// bind prefix+a to reopen annotation pane if closed
+	// bind prefix+a to toggle annotation pane
 	reopenCmd := fmt.Sprintf("%s --internal-watch %s:0.0", self, sessionName)
-	exec.Command("tmux", "bind-key", "a",
-		"split-window", "-h", "-t", sessionName+":0.0", "-l", "45%",
-		"sh", "-c", reopenCmd).Run()
+	bindAnnotationKey(sessionName+":0.0", reopenCmd)
+}
+
+// bindAnnotationKey binds prefix+a to toggle the annotation pane.
+// If the pane exists, it closes it; otherwise, it opens a new one.
+func bindAnnotationKey(targetPane, watchCmd string) {
+	script := fmt.Sprintf(`
+pane_id=$(cat %s 2>/dev/null)
+if [ -n "$pane_id" ] && tmux display-message -t "$pane_id" -p "#{pane_id}" >/dev/null 2>&1; then
+  tmux kill-pane -t "$pane_id"
+  tmux display-message "Annotation pane closed"
+else
+  new_pane=$(tmux split-window -h -t %s -l 45%% -P -F "#{pane_id}" sh -c '%s')
+  printf "%%s" "$new_pane" > %s
+  tmux display-message "Annotation pane opened"
+fi`, paneIDFile, targetPane, watchCmd, paneIDFile)
+
+	exec.Command("tmux", "bind-key", "a", "run-shell", script).Run()
 }
 
 // tryReusePane checks if a saved pane is still alive and sends a new command to it.

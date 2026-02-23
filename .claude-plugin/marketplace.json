@@ -8,7 +8,7 @@
   "plugins": [
     {
       "name": "clipnote",
-      "version": "0.5.3",
+      "version": "0.5.4",
       "source": "./plugin",
       "description": "AI CLI output annotation tool - mark, annotate, and export AI responses in a tmux split pane"
     }
