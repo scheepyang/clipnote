@@ -182,7 +182,13 @@ func launchNewTmuxAndAttach(cli, sessionID, self string) error {
 
 	// write a .command script and open it in the user's terminal
 	scriptPath := "/tmp/clipnote-attach.command"
-	script := fmt.Sprintf("#!/bin/sh\ntmux attach-session -t %s\n", sessionName)
+	gpid := grandparentPID()
+	var script string
+	if gpid != "" {
+		script = fmt.Sprintf("#!/bin/sh\nkill %s\ntmux attach-session -t %s\nexit\n", gpid, sessionName)
+	} else {
+		script = fmt.Sprintf("#!/bin/sh\ntmux attach-session -t %s\nexit\n", sessionName)
+	}
 	if err := os.WriteFile(scriptPath, []byte(script), 0755); err != nil {
 		return fmt.Errorf("failed to write attach script: %w", err)
 	}
@@ -192,6 +198,17 @@ func launchNewTmuxAndAttach(cli, sessionID, self string) error {
 		return exec.Command("open", "-a", app, scriptPath).Run()
 	}
 	return exec.Command("open", scriptPath).Run()
+}
+
+// grandparentPID returns the PID of the grandparent process (Terminal shell).
+// Used to close the original terminal tab after launching a new one.
+func grandparentPID() string {
+	out, err := exec.Command("ps", "-o", "ppid=", "-p",
+		fmt.Sprintf("%d", os.Getppid())).Output()
+	if err != nil {
+		return ""
+	}
+	return strings.TrimSpace(string(out))
 }
 
 // terminalAppName maps TERM_PROGRAM to the application name for `open -a`.
